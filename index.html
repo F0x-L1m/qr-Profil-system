@@ -1,934 +1,583 @@
 <!DOCTYPE html>
-
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR-Code Profil-System</title>
-    <meta name="description" content="Erstellen Sie dynamische Profile für Ihre T-Shirt QR-Codes - kostenlos und einfach">
-    <meta name="keywords" content="QR-Code, T-Shirt, Profil, Social Media, GitHub Pages">
-    <meta name="author" content="QR-Profil System">
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Modernes QR-Code Profil-System</title>
+   <meta name="description" content="Erstellen Sie Ihr persönliches Profil und generieren Sie sofort einen teilbaren QR-Code. Perfekt für Visitenkarten, T-Shirts und mehr.">
+   <meta name="keywords" content="QR-Code, Profil, Generator, vCard, Social Media, Echtzeit, kostenlos">
+   <meta name="author" content="Gemini">
 
-```
-<!-- Open Graph Meta Tags -->
-<meta property="og:title" content="QR-Code Profil-System">
-<meta property="og:description" content="Erstellen Sie dynamische Profile für Ihre T-Shirt QR-Codes">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://ihr-username.github.io/qr-profil-system">
+   <!-- Open Graph Meta Tags für besseres Teilen -->
+   <meta property="og:title" content="Modernes QR-Code Profil-System">
+   <meta property="og:description" content="Erstellen Sie Ihr persönliches Profil und generieren Sie sofort einen teilbaren QR-Code.">
+   <meta property="og:type" content="website">
+   <meta property="og:image" content="https://placehold.co/1200x630/007BFF/FFFFFF?text=QR-Profil">
 
-<!-- Favicon -->
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+   <!-- Favicon -->
+   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
 
-<!-- QR Code Library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
+   <!-- Google Fonts: Inter -->
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+   
+   <!-- QR Code Library -->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+   
+   <!-- Tailwind CSS for modern styling -->
+   <script src="https://cdn.tailwindcss.com"></script>
 
-<style>
-    :root {
-        --primary-color: #667eea;
-        --secondary-color: #764ba2;
-        --accent-color: #f093fb;
-        --text-color: #333;
-        --bg-light: #f8f9fa;
-        --border-color: #e1e5e9;
-        --success-color: #28a745;
-        --warning-color: #ffc107;
-        --danger-color: #dc3545;
-    }
+   <style>
+       /* Custom Styles & Animationen */
+       :root {
+           --primary-blue: #007BFF;
+           --accent-red: #DC3545;
+           --bg-light: #F8F9FA;
+           --bg-dark: #121212;
+           --text-light: #F8F9FA;
+           --text-dark: #212529;
+           --border-color: #dee2e6;
+       }
 
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+       body {
+           font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+           background-color: var(--bg-light);
+           color: var(--text-dark);
+           -webkit-font-smoothing: antialiased;
+           -moz-osx-font-smoothing: grayscale;
+       }
 
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-        min-height: 100vh;
-        color: var(--text-color);
-        line-height: 1.6;
-    }
+       /* 3D Effekt für Karten und Buttons */
+       .card-3d {
+           transform-style: preserve-3d;
+           transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+       }
+       .card-3d:hover {
+           transform: perspective(1000px) rotateY(var(--tw-rotate-y, 0)) rotateX(var(--tw-rotate-x, 0)) scale3d(1.02, 1.02, 1.02);
+       }
 
-    .container {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 20px;
-    }
+       /* Flip-Animation für QR-Code */
+       .flipper {
+           transition: transform 0.6s;
+           transform-style: preserve-3d;
+           position: relative;
+       }
+       .flipper.flipped {
+           transform: rotateY(180deg);
+       }
+       .front, .back {
+           -webkit-backface-visibility: hidden;
+           backface-visibility: hidden;
+           position: absolute;
+           top: 0;
+           left: 0;
+           right: 0;
+           bottom: 0;
+       }
+       .back {
+           transform: rotateY(180deg);
+       }
 
-    .header {
-        text-align: center;
-        color: white;
-        margin-bottom: 30px;
-        animation: fadeInDown 0.8s ease-out;
-    }
+       /* Style für Spracheingabe-Button */
+       .speech-btn.recording::after {
+           content: '';
+           position: absolute;
+           top: 50%;
+           left: 50%;
+           width: 20px;
+           height: 20px;
+           background: var(--accent-red);
+           border-radius: 50%;
+           transform: translate(-50%, -50%);
+           animation: pulse 1.5s infinite;
+       }
 
-    .header h1 {
-        font-size: 2.8rem;
-        margin-bottom: 10px;
-        font-weight: 700;
-    }
+       @keyframes pulse {
+           0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.7; }
+           70% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
+           100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+       }
 
-    .header p {
-        font-size: 1.2rem;
-        opacity: 0.9;
-    }
+       /* Tab-Indikator-Animation */
+       .tab-indicator {
+           position: absolute;
+           bottom: 0;
+           height: 3px;
+           background-color: var(--primary-blue);
+           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+           border-radius: 2px;
+       }
 
-    .tabs {
-        display: flex;
-        background: white;
-        border-radius: 15px 15px 0 0;
-        overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        animation: slideInUp 0.8s ease-out 0.2s both;
-    }
+       /* Verhindern von Layout-Shifts */
+       #qrcode-container { min-height: 256px; }
+       #preview-social-links { min-height: 50px; }
 
-    .tab {
-        flex: 1;
-        padding: 18px 15px;
-        background: var(--bg-light);
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .tab::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-        transition: left 0.5s;
-    }
-
-    .tab:hover::before {
-        left: 100%;
-    }
-
-    .tab.active {
-        background: white;
-        color: var(--primary-color);
-        font-weight: 600;
-        transform: translateY(-2px);
-    }
-
-    .tab-content {
-        background: white;
-        border-radius: 0 0 15px 15px;
-        padding: 40px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        min-height: 500px;
-        animation: slideInUp 0.8s ease-out 0.4s both;
-    }
-
-    .hidden {
-        display: none;
-    }
-
-    /* Admin Panel Styles */
-    .form-section {
-        margin-bottom: 35px;
-    }
-
-    .form-section h3 {
-        color: var(--primary-color);
-        margin-bottom: 20px;
-        font-size: 1.3rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .form-group {
-        margin-bottom: 25px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: #555;
-        font-size: 0.95rem;
-    }
-
-    .form-group input, .form-group textarea {
-        width: 100%;
-        padding: 14px 16px;
-        border: 2px solid var(--border-color);
-        border-radius: 10px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        background: #fafafa;
-    }
-
-    .form-group input:focus, .form-group textarea:focus {
-        outline: none;
-        border-color: var(--primary-color);
-        background: white;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .form-group textarea {
-        resize: vertical;
-        min-height: 120px;
-        font-family: inherit;
-    }
-
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-
-    .btn {
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-        color: white;
-        padding: 14px 28px;
-        border: none;
-        border-radius: 10px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-right: 12px;
-        margin-bottom: 12px;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-        transition: left 0.5s;
-    }
-
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-    }
-
-    .btn:hover::before {
-        left: 100%;
-    }
-
-    .btn:active {
-        transform: translateY(0);
-    }
-
-    .btn-secondary {
-        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-    }
-
-    .btn-success {
-        background: linear-gradient(135deg, var(--success-color) 0%, #1e7e34 100%);
-    }
-
-    /* Profile Display Styles */
-    .profile-card {
-        text-align: center;
-        padding: 30px;
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-radius: 15px;
-        margin-bottom: 30px;
-    }
-
-    .profile-avatar {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 3rem;
-        margin: 0 auto 20px;
-        animation: pulse 2s infinite;
-    }
-
-    .profile-name {
-        font-size: 2.2rem;
-        color: var(--primary-color);
-        margin-bottom: 15px;
-        font-weight: 700;
-    }
-
-    .profile-bio {
-        font-size: 1.1rem;
-        color: #666;
-        margin-bottom: 35px;
-        line-height: 1.7;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .social-links {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-        margin-bottom: 30px;
-    }
-
-    .social-link {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 12px 20px;
-        background: white;
-        border-radius: 12px;
-        text-decoration: none;
-        color: #333;
-        transition: all 0.3s ease;
-        border: 2px solid transparent;
-        font-weight: 500;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-
-    .social-link:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    }
-
-    .social-link.instagram { border-color: #E4405F; }
-    .social-link.instagram:hover { background: #E4405F; color: white; }
-    
-    .social-link.twitter { border-color: #1DA1F2; }
-    .social-link.twitter:hover { background: #1DA1F2; color: white; }
-    
-    .social-link.linkedin { border-color: #0077B5; }
-    .social-link.linkedin:hover { background: #0077B5; color: white; }
-    
-    .social-link.facebook { border-color: #4267B2; }
-    .social-link.facebook:hover { background: #4267B2; color: white; }
-    
-    .social-link.youtube { border-color: #FF0000; }
-    .social-link.youtube:hover { background: #FF0000; color: white; }
-    
-    .social-link.tiktok { border-color: #000000; }
-    .social-link.tiktok:hover { background: #000000; color: white; }
-    
-    .social-link.website { border-color: var(--primary-color); }
-    .social-link.website:hover { background: var(--primary-color); color: white; }
-
-    .qr-section {
-        text-align: center;
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        padding: 40px;
-        border-radius: 15px;
-    }
-
-    .qr-section h2 {
-        color: var(--primary-color);
-        margin-bottom: 30px;
-        font-size: 1.8rem;
-    }
-
-    #qrcode {
-        display: inline-block;
-        padding: 25px;
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-        margin-bottom: 25px;
-    }
-
-    .profile-url {
-        margin: 20px 0;
-        padding: 15px;
-        background: white;
-        border-radius: 10px;
-        font-family: 'Monaco', 'Consolas', monospace;
-        word-break: break-all;
-        color: #666;
-        border-left: 4px solid var(--primary-color);
-    }
-
-    .qr-instructions {
-        background: rgba(255,255,255,0.7);
-        padding: 20px;
-        border-radius: 10px;
-        margin-top: 25px;
-        text-align: left;
-    }
-
-    .qr-instructions h4 {
-        color: var(--primary-color);
-        margin-bottom: 15px;
-    }
-
-    .qr-instructions ul {
-        list-style: none;
-        padding: 0;
-    }
-
-    .qr-instructions li {
-        margin-bottom: 8px;
-        padding-left: 25px;
-        position: relative;
-    }
-
-    .qr-instructions li::before {
-        content: '✓';
-        position: absolute;
-        left: 0;
-        color: var(--success-color);
-        font-weight: bold;
-    }
-
-    /* Animations */
-    @keyframes fadeInDown {
-        from {
-            opacity: 0;
-            transform: translateY(-30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @keyframes slideInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @keyframes pulse {
-        0%, 100% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(1.05);
-        }
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .container {
-            padding: 15px;
-        }
-        
-        .header h1 {
-            font-size: 2.2rem;
-        }
-        
-        .tabs {
-            flex-direction: column;
-        }
-        
-        .tab {
-            padding: 15px;
-        }
-        
-        .tab-content {
-            padding: 25px;
-        }
-        
-        .form-row {
-            grid-template-columns: 1fr;
-        }
-        
-        .social-links {
-            grid-template-columns: 1fr;
-        }
-        
-        .qr-section {
-            padding: 25px;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .header h1 {
-            font-size: 1.8rem;
-        }
-        
-        .profile-name {
-            font-size: 1.8rem;
-        }
-        
-        .btn {
-            width: 100%;
-            margin-right: 0;
-        }
-    }
-
-    /* Dark mode support */
-    @media (prefers-color-scheme: dark) {
-        :root {
-            --text-color: #e9ecef;
-            --bg-light: #343a40;
-            --border-color: #495057;
-        }
-    }
-
-    /* Print styles */
-    @media print {
-        body {
-            background: white;
-        }
-        
-        .tabs, .tab-content {
-            box-shadow: none;
-        }
-        
-        .btn {
-            display: none;
-        }
-    }
-</style>
-```
-
+       /* Print Styles */
+       @media print {
+           body * {
+               visibility: hidden;
+           }
+           #qr-tab, #qr-tab * {
+               visibility: visible;
+           }
+           #qr-tab {
+               position: absolute;
+               left: 0;
+               top: 0;
+               width: 100%;
+           }
+           .no-print {
+               display: none !important;
+           }
+           #qrcode-container img {
+               max-width: 80% !important;
+           }
+       }
+   </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🎯 QR-Profil System</h1>
-            <p>Erstellen Sie dynamische Profile für Ihre T-Shirts</p>
-        </div>
 
-```
-    <div class="tabs">
-        <button class="tab active" onclick="showTab('admin')">✏️ Profil bearbeiten</button>
-        <button class="tab" onclick="showTab('preview')">👁️ Vorschau</button>
-        <button class="tab" onclick="showTab('qr')">📱 QR-Code</button>
-    </div>
+<body class="bg-gray-100">
 
-    <div class="tab-content">
-        <!-- Admin Panel -->
-        <div id="admin-tab" class="tab-panel">
-            <div class="form-section">
-                <h3>👤 Persönliche Informationen</h3>
-                
-                <div class="form-group">
-                    <label for="profileName">Name / Titel *</label>
-                    <input type="text" id="profileName" placeholder="Ihr Name oder Firmenname" required>
-                </div>
+   <div class="container mx-auto p-4 md:p-8 max-w-4xl">
 
-                <div class="form-group">
-                    <label for="profileBio">Beschreibung / Bio</label>
-                    <textarea id="profileBio" placeholder="Erzählen Sie etwas über sich oder Ihr Unternehmen..."></textarea>
-                </div>
-            </div>
+       <!-- Header -->
+       <header class="text-center mb-8">
+           <h1 class="text-4xl md:text-5xl font-bold text-gray-800 flex items-center justify-center gap-3">
+               <span class="text-blue-600">QR</span>
+               <span class="text-red-500">Profil</span>
+               <span>System</span>
+               <span class="text-3xl">🚀</span>
+           </h1>
+           <p class="text-gray-600 mt-2 text-lg">Erstelle dein Profil. Generiere deinen QR-Code. Sofort.</p>
+       </header>
 
-            <div class="form-section">
-                <h3>🌐 Social Media Links</h3>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="instagram">📷 Instagram</label>
-                        <input type="url" id="instagram" placeholder="https://instagram.com/username">
-                    </div>
+       <!-- Tabs -->
+       <div class="mb-6 bg-white rounded-xl shadow-md p-2 relative no-print">
+           <div id="tab-container" class="flex space-x-2 relative">
+               <button data-tab="edit" class="tab-btn flex-1 py-3 px-2 text-center font-semibold text-gray-700 rounded-lg transition-colors duration-300 z-10">
+                   ✏️ Bearbeiten
+               </button>
+               <button data-tab="preview" class="tab-btn flex-1 py-3 px-2 text-center font-semibold text-gray-500 rounded-lg transition-colors duration-300 z-10">
+                   👁️ Vorschau
+               </button>
+               <button data-tab="qr" class="tab-btn flex-1 py-3 px-2 text-center font-semibold text-gray-500 rounded-lg transition-colors duration-300 z-10">
+                   📱 QR-Code
+               </button>
+               <div id="tab-indicator" class="tab-indicator"></div>
+           </div>
+       </div>
+       
+       <!-- Tab Content -->
+       <main>
+           <!-- Edit Tab -->
+           <div id="edit-tab" class="tab-content bg-white p-6 md:p-8 rounded-2xl shadow-lg card-3d">
+               <form id="profile-form">
+                   <!-- Persönliche Infos -->
+                   <section class="mb-8">
+                       <h3 class="text-xl font-bold text-gray-800 mb-4 border-l-4 border-blue-500 pl-3">Persönliche Informationen</h3>
+                       <div class="grid grid-cols-1 gap-6">
+                           <div class="relative">
+                               <label for="name" class="block text-sm font-medium text-gray-600 mb-1">Name / Titel*</label>
+                               <input type="text" id="name" name="name" class="w-full pl-3 pr-10 py-2.5 bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-300 transform hover:scale-[1.01] focus:scale-[1.02]" placeholder="Max Mustermann" required>
+                               <button type="button" class="speech-btn absolute right-2 top-8 text-gray-400 hover:text-blue-500" data-target="name" title="Per Sprache eingeben">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
+                               </button>
+                           </div>
+                           <div class="relative">
+                               <label for="bio" class="block text-sm font-medium text-gray-600 mb-1">Bio / Beschreibung</label>
+                               <textarea id="bio" name="bio" rows="4" class="w-full pl-3 pr-10 py-2.5 bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-300 transform hover:scale-[1.01] focus:scale-[1.02]" placeholder="Digitaler Nomade, Entwickler & Kaffeeliebhaber..."></textarea>
+                               <button type="button" class="speech-btn absolute right-2 top-8 text-gray-400 hover:text-blue-500" data-target="bio" title="Per Sprache eingeben">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
+                               </button>
+                           </div>
+                       </div>
+                   </section>
+                   
+                   <!-- Social Media -->
+                   <section>
+                       <h3 class="text-xl font-bold text-gray-800 mb-4 border-l-4 border-red-500 pl-3">Social Media & Links</h3>
+                       <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                           <!-- Dynamically inserted social fields will go here -->
+                       </div>
+                   </section>
+               </form>
+                <div class="mt-8 flex flex-wrap gap-4 items-center justify-center">
+                   <button id="clear-form-btn" class="px-6 py-2.5 bg-gray-200 text-gray-700 font-semibold rounded-lg shadow-sm hover:bg-gray-300 transition-all duration-300 transform hover:-translate-y-0.5">
+                       🗑️ Alles löschen
+                   </button>
+               </div>
+           </div>
 
-                    <div class="form-group">
-                        <label for="twitter">🐦 Twitter / X</label>
-                        <input type="url" id="twitter" placeholder="https://twitter.com/username">
-                    </div>
-                </div>
+           <!-- Preview Tab -->
+           <div id="preview-tab" class="tab-content hidden">
+               <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg card-3d text-center">
+                   <div class="relative inline-block mb-4">
+                       <div id="preview-avatar" class="w-28 h-28 md:w-32 md:h-32 bg-gradient-to-br from-blue-500 to-red-500 rounded-full flex items-center justify-center text-white text-5xl font-bold shadow-lg transition-transform duration-500 transform hover:scale-110">
+                           M
+                       </div>
+                   </div>
+                   <h2 id="preview-name" class="text-3xl md:text-4xl font-bold text-gray-800 break-words">Max Mustermann</h2>
+                   <p id="preview-bio" class="text-gray-600 mt-3 mb-6 max-w-xl mx-auto break-words">Digitaler Nomade, Entwickler & Kaffeeliebhaber...</p>
+                   <div id="preview-social-links" class="flex flex-wrap justify-center gap-3">
+                       <!-- Preview links go here -->
+                   </div>
+               </div>
+           </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="linkedin">💼 LinkedIn</label>
-                        <input type="url" id="linkedin" placeholder="https://linkedin.com/in/username">
-                    </div>
+           <!-- QR Code Tab -->
+           <div id="qr-tab" class="tab-content hidden">
+               <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg card-3d text-center">
+                   <h2 class="text-2xl font-bold text-gray-800 mb-4">Dein persönlicher QR-Code</h2>
+                   <div class="flex justify-center items-center w-64 h-64 mx-auto mb-4 relative">
+                       <div id="qrcode-container" class="w-full h-full flipper">
+                           <div class="front flex items-center justify-center bg-white p-4 rounded-xl shadow-inner">
+                               <!-- QR Code will be generated here -->
+                           </div>
+                            <div class="back flex flex-col items-center justify-center bg-white p-4 rounded-xl shadow-inner">
+                               <h3 class="font-semibold text-lg text-blue-600">Profil-URL</h3>
+                               <p id="profile-url" class="text-xs text-gray-500 mt-2 break-all p-2 bg-gray-100 rounded">Hier wird deine URL angezeigt...</p>
+                               <button id="copy-url-btn" class="mt-4 px-4 py-2 bg-blue-100 text-blue-700 text-sm font-semibold rounded-lg hover:bg-blue-200 transition">URL kopieren</button>
+                           </div>
+                       </div>
+                   </div>
 
-                    <div class="form-group">
-                        <label for="facebook">👥 Facebook</label>
-                        <input type="url" id="facebook" placeholder="https://facebook.com/username">
-                    </div>
-                </div>
+                   <div class="flex justify-center mb-6 no-print">
+                        <button id="flip-btn" class="text-sm text-gray-500 hover:text-blue-600 transition">
+                           🔗 Profil-URL anzeigen
+                       </button>
+                   </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="youtube">📺 YouTube</label>
-                        <input type="url" id="youtube" placeholder="https://youtube.com/@username">
-                    </div>
+                   <div class="flex flex-wrap justify-center gap-3 md:gap-4 no-print">
+                       <button id="download-btn" class="flex items-center gap-2 px-5 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 transform hover:-translate-y-0.5">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                           Download (.png)
+                       </button>
+                       <button id="share-btn" class="flex items-center gap-2 px-5 py-3 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition-all duration-300 transform hover:-translate-y-0.5">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg>
+                           Teilen
+                       </button>
+                       <button id="print-btn" class="flex items-center gap-2 px-5 py-3 bg-gray-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 transition-all duration-300 transform hover:-translate-y-0.5">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" /></svg>
+                           Drucken
+                       </button>
+                   </div>
+               </div>
+           </div>
+       </main>
 
-                    <div class="form-group">
-                        <label for="tiktok">🎵 TikTok</label>
-                        <input type="url" id="tiktok" placeholder="https://tiktok.com/@username">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="website">🌐 Website</label>
-                    <input type="url" id="website" placeholder="https://ihre-website.de">
-                </div>
-            </div>
-
-            <div style="text-align: center; margin-top: 30px;">
-                <button class="btn btn-success" onclick="saveProfile()">💾 Profil speichern</button>
-                <button class="btn btn-secondary" onclick="loadSampleData()">📝 Beispieldaten laden</button>
-                <button class="btn btn-secondary" onclick="clearProfile()">🗑️ Formular leeren</button>
-            </div>
-        </div>
-
-        <!-- Preview Panel -->
-        <div id="preview-tab" class="tab-panel hidden">
-            <div class="profile-card">
-                <div class="profile-avatar">👤</div>
-                <div id="previewName" class="profile-name">Ihr Name</div>
-                <div id="previewBio" class="profile-bio">Ihre Beschreibung erscheint hier...</div>
-                <div id="previewSocial" class="social-links"></div>
-            </div>
-            
-            <div style="text-align: center;">
-                <button class="btn" onclick="showTab('qr')">📱 QR-Code generieren</button>
-            </div>
-        </div>
-
-        <!-- QR Code Panel -->
-        <div id="qr-tab" class="tab-panel hidden">
-            <div class="qr-section">
-                <h2>📱 QR-Code für T-Shirt Druck</h2>
-                <div id="qrcode"></div>
-                <div class="profile-url">
-                    <strong>🔗 Profil-URL:</strong><br>
-                    <span id="profileUrl">Speichern Sie zuerst Ihr Profil</span>
-                </div>
-                
-                <div class="qr-instructions">
-                    <h4>📋 Anweisungen für T-Shirt Druck:</h4>
-                    <ul>
-                        <li>Rechtsklick auf QR-Code → "Bild speichern unter..."</li>
-                        <li>Mindestgröße: 3x3 cm für zuverlässiges Scannen</li>
-                        <li>Schwarzer Code auf weißem/hellem Untergrund</li>
-                        <li>Position: Brust oder Rücken, gut sichtbar</li>
-                        <li>Glatte Materialien funktionieren am besten</li>
-                    </ul>
-                </div>
-                
-                <div style="margin-top: 25px;">
-                    <button class="btn" onclick="downloadQR()">💾 QR-Code herunterladen</button>
-                    <button class="btn btn-secondary" onclick="printQR()">🖨️ QR-Code drucken</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+       <!-- Toast Notification -->
+       <div id="toast" class="fixed bottom-5 right-5 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-xl opacity-0 translate-y-10 transition-all duration-300">
+           URL wurde in die Zwischenablage kopiert!
+       </div>
+   </div>
 
 <script>
-    // Globale Variablen
-    let currentProfile = {
-        name: '',
-        bio: '',
-        social: {}
-    };
+document.addEventListener('DOMContentLoaded', () => {
 
-    let qrCodeCanvas = null;
+   // --- DOM ELEMENTE ---
+   const getEl = (id) => document.getElementById(id);
+   const queryEl = (selector) => document.querySelector(selector);
+   const queryAll = (selector) => document.querySelectorAll(selector);
 
-    // Tab-Funktionalität
-    function showTab(tabName) {
-        // Alle Tabs deaktivieren
-        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
-        
-        // Aktiven Tab aktivieren
-        event.target.classList.add('active');
-        document.getElementById(tabName + '-tab').classList.remove('hidden');
-        
-        // Vorschau und QR-Code aktualisieren wenn nötig
-        if (tabName === 'preview') {
-            updatePreview();
-        } else if (tabName === 'qr') {
-            generateQRCode();
-        }
-    }
+   const form = getEl('profile-form');
+   const tabContainer = getEl('tab-container');
+   const tabIndicator = getEl('tab-indicator');
+   const qrContainer = queryEl('#qrcode-container .front');
+   const flipper = getEl('qrcode-container');
+   
+   // --- KONSTANTEN & STATE ---
+   const SOCIAL_PLATFORMS = {
+       website:   { name: 'Website',   placeholder: 'https://deine-webseite.de', icon: '🌐' },
+       instagram: { name: 'Instagram', placeholder: 'https://instagram.com/benutzername', icon: '📸' },
+       twitter:   { name: 'X (Twitter)', placeholder: 'https://x.com/benutzername', icon: '🐦' },
+       linkedin:  { name: 'LinkedIn',  placeholder: 'https://linkedin.com/in/benutzername', icon: '💼' },
+       facebook:  { name: 'Facebook',  placeholder: 'https://facebook.com/benutzername', icon: '👍' },
+       youtube:   { name: 'YouTube',   placeholder: 'https://youtube.com/@kanalname', icon: '📺' },
+       tiktok:    { name: 'TikTok',    placeholder: 'https://tiktok.com/@benutzername', icon: '🎵' },
+       snapchat:  { name: 'Snapchat',  placeholder: 'https://snapchat.com/add/benutzername', icon: '👻' }
+   };
+   let qrCodeInstance = null;
+   let activeTab = 'edit';
+   
+   // --- INITIALISIERUNG ---
+   const init = () => {
+       setupSocialFields();
+       setupEventListeners();
+       handleUrlParams();
+       updateAll();
+       updateTabIndicator(queryEl('.tab-btn[data-tab="edit"]'));
+   };
 
-    // Profil speichern
-    function saveProfile() {
-        const name = document.getElementById('profileName').value.trim();
-        
-        if (!name) {
-            alert('❌ Bitte geben Sie mindestens einen Namen ein!');
-            return;
-        }
+   // --- SETUP FUNKTIONEN ---
+   const setupSocialFields = () => {
+       const container = queryEl('#edit-tab .grid.md\\:grid-cols-2');
+       let fieldsHtml = '';
+       for (const [key, platform] of Object.entries(SOCIAL_PLATFORMS)) {
+           fieldsHtml += `
+               <div class="relative">
+                   <label for="${key}" class="block text-sm font-medium text-gray-600 mb-1 flex items-center gap-2">${platform.icon} ${platform.name}</label>
+                   <input type="url" id="${key}" name="${key}" class="w-full p-2.5 bg-gray-50 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-300 transform hover:scale-[1.01] focus:scale-[1.02]" placeholder="${platform.placeholder}">
+               </div>
+           `;
+       }
+       container.innerHTML = fieldsHtml;
+   };
+   
+   const setupEventListeners = () => {
+       form.addEventListener('input', () => updateAll(false));
+       tabContainer.addEventListener('click', handleTabClick);
+       getEl('flip-btn').addEventListener('click', () => flipper.classList.toggle('flipped'));
+       getEl('copy-url-btn').addEventListener('click', copyUrlToClipboard);
+       getEl('download-btn').addEventListener('click', downloadQR);
+       getEl('share-btn').addEventListener('click', shareProfile);
+       getEl('print-btn').addEventListener('click', () => window.print());
+       getEl('clear-form-btn').addEventListener('click', clearForm);
+       setupSpeechRecognition();
+   };
 
-        currentProfile = {
-            name: name,
-            bio: document.getElementById('profileBio').value.trim(),
-            social: {
-                instagram: document.getElementById('instagram').value.trim(),
-                twitter: document.getElementById('twitter').value.trim(),
-                linkedin: document.getElementById('linkedin').value.trim(),
-                facebook: document.getElementById('facebook').value.trim(),
-                youtube: document.getElementById('youtube').value.trim(),
-                tiktok: document.getElementById('tiktok').value.trim(),
-                website: document.getElementById('website').value.trim()
-            },
-            timestamp: new Date().toISOString(),
-            id: 'profile_' + Date.now()
-        };
+   const setupSpeechRecognition = () => {
+       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+       if (!SpeechRecognition) {
+           console.warn("Speech Recognition wird von diesem Browser nicht unterstützt.");
+           queryAll('.speech-btn').forEach(btn => btn.style.display = 'none');
+           return;
+       }
 
-        // Validierung der URLs
-        const socialLinks = Object.entries(currentProfile.social).filter(([key, value]) => value);
-        const invalidUrls = socialLinks.filter(([key, url]) => !isValidUrl(url));
-        
-        if (invalidUrls.length > 0) {
-            alert('⚠️ Bitte überprüfen Sie die URLs: ' + invalidUrls.map(([key]) => key).join(', '));
-            return;
-        }
+       const recognition = new SpeechRecognition();
+       recognition.lang = 'de-DE';
+       recognition.interimResults = false;
+       recognition.maxAlternatives = 1;
 
-        // Profil erfolgreich gespeichert
-        alert('✅ Profil erfolgreich gespeichert!\n\nProfil-ID: ' + currentProfile.id);
-        
-        // Vorschau aktualisieren
-        updatePreview();
-        generateQRCode();
-    }
+       queryAll('.speech-btn').forEach(btn => {
+           btn.addEventListener('click', () => {
+               const targetId = btn.dataset.target;
+               const targetInput = getEl(targetId);
+               
+               recognition.start();
+               btn.classList.add('recording');
 
-    // URL Validierung
-    function isValidUrl(string) {
-        try {
-            new URL(string);
-            return true;
-        } catch (_) {
-            return false;
-        }
-    }
+               recognition.onresult = (event) => {
+                   const speechResult = event.results[0][0].transcript;
+                   targetInput.value = speechResult;
+                   updateAll();
+               };
 
-    // Vorschau aktualisieren
-    function updatePreview() {
-        document.getElementById('previewName').textContent = currentProfile.name || 'Ihr Name';
-        document.getElementById('previewBio').textContent = currentProfile.bio || 'Ihre Beschreibung erscheint hier...';
-        
-        // Social Links erstellen
-        const socialContainer = document.getElementById('previewSocial');
-        socialContainer.innerHTML = '';
-        
-        const socialPlatforms = {
-            instagram: { name: '📷 Instagram', color: '#E4405F' },
-            twitter: { name: '🐦 Twitter', color: '#1DA1F2' },
-            linkedin: { name: '💼 LinkedIn', color: '#0077B5' },
-            facebook: { name: '👥 Facebook', color: '#4267B2' },
-            youtube: { name: '📺 YouTube', color: '#FF0000' },
-            tiktok: { name: '🎵 TikTok', color: '#000000' },
-            website: { name: '🌐 Website', color: '#667eea' }
-        };
+               recognition.onspeechend = () => {
+                   recognition.stop();
+                   btn.classList.remove('recording');
+               };
 
-        Object.entries(currentProfile.social || {}).forEach(([platform, url]) => {
-            if (url && url.trim()) {
-                const link = document.createElement('a');
-                link.href = url;
-                link.target = '_blank';
-                link.rel = 'noopener noreferrer';
-                link.className = `social-link ${platform}`;
-                link.textContent = socialPlatforms[platform].name;
-                socialContainer.appendChild(link);
-            }
-        });
+               recognition.onerror = (event) => {
+                   console.error('Speech recognition error:', event.error);
+                   btn.classList.remove('recording');
+               };
+           });
+       });
+   };
 
-        if (socialContainer.children.length === 0) {
-            socialContainer.innerHTML = '<p style="color: #999; grid-column: 1 / -1;">Keine Social Media Links hinzugefügt</p>';
-        }
-    }
+   // --- KERNLOGIK ---
+   const getProfileData = () => {
+       const formData = new FormData(form);
+       const data = {};
+       for (let [key, value] of formData.entries()) {
+           data[key] = value.trim();
+       }
+       return data;
+   };
+   
+   const generateProfileUrl = (data) => {
+       const baseUrl = window.location.origin + window.location.pathname;
+       const params = new URLSearchParams();
+       Object.entries(data).forEach(([key, value]) => {
+           if (value) {
+               params.append(key, value);
+           }
+       });
+       return `${baseUrl}?${params.toString()}`;
+   };
 
-    // QR-Code generieren
-    function generateQRCode() {
-        if (!currentProfile.name) {
-            document.getElementById('profileUrl').textContent = 'Speichern Sie zuerst Ihr Profil';
-            document.getElementById('qrcode').innerHTML = '<p style="color: #999;">Erst Profil speichern, dann QR-Code generieren</p>';
-            return;
-        }
+   const updateAll = (isInitialLoad = false) => {
+       const data = getProfileData();
+       updatePreview(data);
+       generateQRCode(data);
+       if (!isInitialLoad) {
+           // Optional: Update URL in browser history without reloading
+           // const url = generateProfileUrl(data);
+           // window.history.replaceState({path:url},'',url);
+       }
+   };
 
-        const profileUrl = `${window.location.origin}${window.location.pathname}?profile=${encodeURIComponent(currentProfile.id)}`;
-        
-        document.getElementById('profileUrl').textContent = profileUrl;
-        
-        // QR-Code erstellen
-        const qrContainer = document.getElementById('qrcode');
-        qrContainer.innerHTML = '';
-        
-        QRCode.toCanvas(qrContainer, profileUrl, {
-            width: 250,
-            height: 250,
-            colorDark: '#333333',
-            colorLight: '#ffffff',
-            margin: 3,
-            correctLevel: QRCode.CorrectLevel.M
-        }, function (error, canvas) {
-            if (error) {
-                console.error(error);
-                qrContainer.innerHTML = '<p style="color: red;">Fehler beim Erstellen des QR-Codes</p>';
-            } else {
-                qrCodeCanvas = canvas;
-            }
-        });
-    }
+   // --- UPDATE-FUNKTIONEN FÜR DIE UI ---
+   const updatePreview = (data) => {
+       const { name, bio, ...social } = data;
+       getEl('preview-name').textContent = name || 'Dein Name';
+       getEl('preview-bio').textContent = bio || 'Deine Bio erscheint hier...';
+       
+       const avatar = getEl('preview-avatar');
+       avatar.textContent = name ? name.charAt(0).toUpperCase() : '?';
 
-    // QR-Code herunterladen
-    function downloadQR() {
-        if (!qrCodeCanvas) {
-            alert('❌ Erst QR-Code generieren!');
-            return;
-        }
+       const socialContainer = getEl('preview-social-links');
+       socialContainer.innerHTML = '';
+       let linksHtml = '';
+       Object.entries(social).forEach(([key, value]) => {
+           if (value && SOCIAL_PLATFORMS[key]) {
+               linksHtml += `
+                   <a href="${value}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-gray-100 text-gray-700 font-semibold rounded-full text-sm hover:bg-gray-200 transition-transform transform hover:scale-105 flex items-center gap-2">
+                       ${SOCIAL_PLATFORMS[key].icon} <span>${SOCIAL_PLATFORMS[key].name}</span>
+                   </a>
+               `;
+           }
+       });
+       socialContainer.innerHTML = linksHtml || '<p class="text-sm text-gray-500">Noch keine Links hinzugefügt.</p>';
+   };
 
-        const link = document.createElement('a');
-        link.download = `qr-code-${currentProfile.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
-        link.href = qrCodeCanvas.toDataURL();
-        link.click();
-    }
+   const generateQRCode = (data) => {
+       const url = generateProfileUrl(data);
+       getEl('profile-url').textContent = url;
+       
+       qrContainer.innerHTML = '';
+       if (data.name) {
+           qrCodeInstance = new QRCode(qrContainer, {
+               text: url,
+               width: 256,
+               height: 256,
+               colorDark: "#000000",
+               colorLight: "#ffffff",
+               correctLevel: QRCode.CorrectLevel.H
+           });
+       } else {
+           qrContainer.innerHTML = '<p class="text-center text-gray-500 p-4">Bitte gib einen Namen ein, um den QR-Code zu erstellen.</p>';
+           qrCodeInstance = null;
+       }
+   };
+   
+   // --- EVENT HANDLER ---
+   const handleTabClick = (e) => {
+       const clickedTab = e.target.closest('.tab-btn');
+       if (!clickedTab) return;
+       
+       activeTab = clickedTab.dataset.tab;
 
-    // QR-Code drucken
-    function printQR() {
-        if (!qrCodeCanvas) {
-            alert('❌ Erst QR-Code generieren!');
-            return;
-        }
+       // Tabs und Content aktualisieren
+       queryAll('.tab-btn').forEach(btn => {
+           btn.classList.toggle('text-gray-700', btn === clickedTab);
+           btn.classList.toggle('text-gray-500', btn !== clickedTab);
+       });
 
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-            <html>
-            <head>
-                <title>QR-Code - ${currentProfile.name}</title>
-                <style>
-                    body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
-                    .qr-print { margin: 20px auto; }
-                    .info { margin-top: 30px; color: #666; }
-                </style>
-            </head>
-            <body>
-                <h1>${currentProfile.name}</h1>
-                <div class="qr-print">
-                    <img src="${qrCodeCanvas.toDataURL()}" alt="QR-Code">
-                </div>
-                <div class="info">
-                    <p>QR-Code für T-Shirt Druck</p>
-                    <p>Mindestgröße: 3x3 cm</p>
-                    <p>${document.getElementById('profileUrl').textContent}</p>
-                </div>
-            </body>
-            </html>
-        `);
-        printWindow.document.close();
-        printWindow.print();
-    }
+       queryAll('.tab-content').forEach(content => {
+           content.classList.toggle('hidden', content.id !== `${activeTab}-tab`);
+       });
 
-    // Beispieldaten laden
-    function loadSampleData() {
-        document.getElementById('profileName').value = 'Max Mustermann';
-        document.getElementById('profileBio').value = 'Digitaler Nomade und Tech-Enthusiast 🚀\n\nImmer auf der Suche nach neuen Abenteuern und spannenden Projekten! Folge mir für Updates über Technologie, Reisen und Entrepreneurship.';
-        document.getElementById('instagram').value = 'https://instagram.com/maxmustermann';
-        document.getElementById('twitter').value = 'https://twitter.com/maxmustermann';
-        document.getElementById('linkedin').value = 'https://linkedin.com/in/maxmustermann';
-        document.getElementById('website').value = 'https://maxmustermann.de';
-        document.getElementById('youtube').value = 'https://youtube.com/@maxmustermann';
-        
-        alert('📝 Beispieldaten geladen! Klicken Sie auf "Profil speichern" um die Änderungen zu übernehmen.');
-    }
+       updateTabIndicator(clickedTab);
+   };
 
-    // Formular leeren
-    function clearProfile() {
-        if (confirm('🗑️ Möchten Sie wirklich alle Eingaben löschen?')) {
-            document.querySelectorAll('input, textarea').forEach(input => input.value = '');
-            currentProfile = { name: '', bio: '', social: {} };
-            updatePreview();
-            alert('✅ Formular geleert!');
-        }
-    }
+   const updateTabIndicator = (activeTabElement) => {
+       const left = activeTabElement.offsetLeft;
+       const width = activeTabElement.offsetWidth;
+       tabIndicator.style.left = `${left}px`;
+       tabIndicator.style.width = `${width}px`;
+   }
+   
+   const handleUrlParams = () => {
+       const params = new URLSearchParams(window.location.search);
+       if (params.toString()) {
+           params.forEach((value, key) => {
+               const input = getEl(key);
+               if (input) {
+                   input.value = decodeURIComponent(value);
+               }
+           });
+           // Nach dem Laden aus URL, zur Vorschau wechseln
+           const previewTabBtn = queryEl('.tab-btn[data-tab="preview"]');
+           if (previewTabBtn) {
+               previewTabBtn.click();
+           }
+           updateAll(true);
+       } else {
+           // Beispieldaten laden, wenn keine Parameter vorhanden sind
+           loadSampleData();
+       }
+   };
 
-    // URL Parameter handling
-    function handleUrlParams() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const profileId = urlParams.get('profile');
-        
-        if (profileId) {
-            // Simuliere das Laden eines Profils basierend auf der ID
-            // In einer echten Anwendung würde hier eine Datenbankabfrage stehen
-            loadSampleData();
-            saveProfile();
-            showTab('preview');
-            
-            // Tab-Buttons entsprechend aktualisieren
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab')[1].classList.add('active'); // Preview tab
-            
-            // URL bereinigen (optional)
-            // window.history.replaceState({}, document.title, window.location.pathname);
-        }
-    }
+   // --- AKTIONEN & UTILITIES ---
+   const copyUrlToClipboard = () => {
+       const url = getEl('profile-url').textContent;
+       navigator.clipboard.writeText(url).then(() => {
+           showToast("URL kopiert!");
+       }).catch(err => {
+           console.error('Kopieren fehlgeschlagen: ', err);
+           showToast("Kopieren fehlgeschlagen!", true);
+       });
+   };
 
-    // Event Listeners
-    document.addEventListener('DOMContentLoaded', function() {
-        handleUrlParams();
-        
-        // Automatisches Speichern bei Eingabe (optional)
-        /*
-        document.querySelectorAll('input, textarea').forEach(input => {
-            input.addEventListener('input', debounce(function() {
-                if (currentProfile.name) {
-                    saveProfile();
-                }
-            }, 2000));
-        });
-        */
-    });
+   const showToast = (message, isError = false) => {
+       const toast = getEl('toast');
+       toast.textContent = message;
+       toast.classList.toggle('bg-red-500', isError);
+       toast.classList.toggle('bg-gray-800', !isError);
+       toast.classList.remove('opacity-0', 'translate-y-10');
+       setTimeout(() => {
+           toast.classList.add('opacity-0', 'translate-y-10');
+       }, 3000);
+   };
 
-    // Debounce Funktion für Performance
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
+   const downloadQR = () => {
+       if (!qrCodeInstance || !qrCodeInstance._el.querySelector('canvas')) {
+           showToast("Bitte erstelle zuerst einen QR-Code.", true);
+           return;
+       }
+       const canvas = qrCodeInstance._el.querySelector('canvas');
+       const dataUrl = canvas.toDataURL('image/png');
+       const link = document.createElement('a');
+       link.download = `qr-profil-${getEl('name').value || 'unbenannt'}.png`;
+       link.href = dataUrl;
+       document.body.appendChild(link);
+       link.click();
+       document.body.removeChild(link);
+   };
 
-    // Keyboard Shortcuts
-    document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey || e.metaKey) {
-            switch(e.key) {
-                case 's':
-                    e.preventDefault();
-                    saveProfile();
-                    break;
-                case '1':
-                    e.preventDefault();
-                    showTab('admin');
-                    break;
-                case '2':
-                    e.preventDefault();
-                    showTab('preview');
-                    break;
-                case '3':
-                    e.preventDefault();
-                    showTab('qr');
-                    break;
-            }
-        }
-    });
+   const shareProfile = async () => {
+       const data = getProfileData();
+       const shareData = {
+           title: `Profil von ${data.name}`,
+           text: `Schau dir mein Profil an: ${data.name}`,
+           url: generateProfileUrl(data)
+       };
+       if (navigator.share && navigator.canShare(shareData)) {
+           try {
+               await navigator.share(shareData);
+           } catch (err) {
+               console.error("Fehler beim Teilen: ", err);
+           }
+       } else {
+           copyUrlToClipboard();
+           showToast("Teilen nicht unterstützt. URL wurde kopiert.");
+       }
+   };
+   
+   const clearForm = () => {
+       if (confirm("Möchtest du wirklich alle Felder leeren?")) {
+           form.reset();
+           updateAll();
+           showToast("Formular geleert.");
+       }
+   };
 
-    // Service Worker für Offline-Funktionalität (optional)
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            navigator.serviceWorker.register('/sw.js')
-                .then(function(registration) {
-                    console.log('ServiceWorker registration successful');
-                })
-                .catch(function(err) {
-                    console.log('ServiceWorker registration failed');
-                });
-        });
-    }
+   const loadSampleData = () => {
+       getEl('name').value = 'Alex Weber';
+       getEl('bio').value = 'Kreativer Kopf aus Berlin 🎨 | Design & Technologie Enthusiast | Immer auf der Suche nach Inspiration und dem perfekten Espresso.';
+       getEl('instagram').value = 'https://instagram.com/example';
+       getEl('twitter').value = 'https://x.com/example';
+       getEl('linkedin').value = 'https://linkedin.com/in/example';
+       updateAll(true);
+   };
+
+   // App starten
+   init();
+
+});
 </script>
-```
 
 </body>
 </html>
