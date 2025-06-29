@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR-Code Profil-System</title>
+    <meta name="description" content="Erstellen Sie dynamische Profile für Ihre T-Shirt QR-Codes - kostenlos und einfach">
+    <meta name="keywords" content="QR-Code, T-Shirt, Profil, Social Media, GitHub Pages">
+    <meta name="author" content="QR-Profil System">
+
+```
+<!-- Open Graph Meta Tags -->
+<meta property="og:title" content="QR-Code Profil-System">
+<meta property="og:description" content="Erstellen Sie dynamische Profile für Ihre T-Shirt QR-Codes">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ihr-username.github.io/qr-profil-system">
+
+<!-- Favicon -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+
+<!-- QR Code Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
+
+<style>
+    :root {
+        --primary-color: #667eea;
+        --secondary-color: #764ba2;
+        --accent-color: #f093fb;
+        --text-color: #333;
+        --bg-light: #f8f9fa;
+        --border-color: #e1e5e9;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        min-height: 100vh;
+        color: var(--text-color);
+        line-height: 1.6;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 30px;
+        animation: fadeInDown 0.8s ease-out;
+    }
+
+    .header h1 {
+        font-size: 2.8rem;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+
+    .header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+
+    .tabs {
+        display: flex;
+        background: white;
+        border-radius: 15px 15px 0 0;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        animation: slideInUp 0.8s ease-out 0.2s both;
+    }
+
+    .tab {
+        flex: 1;
+        padding: 18px 15px;
+        background: var(--bg-light);
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .tab::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.5s;
+    }
+
+    .tab:hover::before {
+        left: 100%;
+    }
+
+    .tab.active {
+        background: white;
+        color: var(--primary-color);
+        font-weight: 600;
+        transform: translateY(-2px);
+    }
+
+    .tab-content {
+        background: white;
+        border-radius: 0 0 15px 15px;
+        padding: 40px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        min-height: 500px;
+        animation: slideInUp 0.8s ease-out 0.4s both;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    /* Admin Panel Styles */
+    .form-section {
+        margin-bottom: 35px;
+    }
+
+    .form-section h3 {
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #555;
+        font-size: 0.95rem;
+    }
+
+    .form-group input, .form-group textarea {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid var(--border-color);
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #fafafa;
+    }
+
+    .form-group input:focus, .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        background: white;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 120px;
+        font-family: inherit;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .btn {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: white;
+        padding: 14px 28px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-right: 12px;
+        margin-bottom: 12px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn:hover::before {
+        left: 100%;
+    }
+
+    .btn:active {
+        transform: translateY(0);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, var(--success-color) 0%, #1e7e34 100%);
+    }
+
+    /* Profile Display Styles */
+    .profile-card {
+        text-align: center;
+        padding: 30px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        margin: 0 auto 20px;
+        animation: pulse 2s infinite;
+    }
+
+    .profile-name {
+        font-size: 2.2rem;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        font-weight: 700;
+    }
+
+    .profile-bio {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 35px;
+        line-height: 1.7;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .social-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .social-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 20px;
+        background: white;
+        border-radius: 12px;
+        text-decoration: none;
+        color: #333;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        font-weight: 500;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .social-link:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .social-link.instagram { border-color: #E4405F; }
+    .social-link.instagram:hover { background: #E4405F; color: white; }
+    
+    .social-link.twitter { border-color: #1DA1F2; }
+    .social-link.twitter:hover { background: #1DA1F2; color: white; }
+    
+    .social-link.linkedin { border-color: #0077B5; }
+    .social-link.linkedin:hover { background: #0077B5; color: white; }
+    
+    .social-link.facebook { border-color: #4267B2; }
+    .social-link.facebook:hover { background: #4267B2; color: white; }
+    
+    .social-link.youtube { border-color: #FF0000; }
+    .social-link.youtube:hover { background: #FF0000; color: white; }
+    
+    .social-link.tiktok { border-color: #000000; }
+    .social-link.tiktok:hover { background: #000000; color: white; }
+    
+    .social-link.website { border-color: var(--primary-color); }
+    .social-link.website:hover { background: var(--primary-color); color: white; }
+
+    .qr-section {
+        text-align: center;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 40px;
+        border-radius: 15px;
+    }
+
+    .qr-section h2 {
+        color: var(--primary-color);
+        margin-bottom: 30px;
+        font-size: 1.8rem;
+    }
+
+    #qrcode {
+        display: inline-block;
+        padding: 25px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        margin-bottom: 25px;
+    }
+
+    .profile-url {
+        margin: 20px 0;
+        padding: 15px;
+        background: white;
+        border-radius: 10px;
+        font-family: 'Monaco', 'Consolas', monospace;
+        word-break: break-all;
+        color: #666;
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .qr-instructions {
+        background: rgba(255,255,255,0.7);
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 25px;
+        text-align: left;
+    }
+
+    .qr-instructions h4 {
+        color: var(--primary-color);
+        margin-bottom: 15px;
+    }
+
+    .qr-instructions ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .qr-instructions li {
+        margin-bottom: 8px;
+        padding-left: 25px;
+        position: relative;
+    }
+
+    .qr-instructions li::before {
+        content: '✓';
+        position: absolute;
+        left: 0;
+        color: var(--success-color);
+        font-weight: bold;
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container {
+            padding: 15px;
+        }
+        
+        .header h1 {
+            font-size: 2.2rem;
+        }
+        
+        .tabs {
+            flex-direction: column;
+        }
+        
+        .tab {
+            padding: 15px;
+        }
+        
+        .tab-content {
+            padding: 25px;
+        }
+        
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+        
+        .social-links {
+            grid-template-columns: 1fr;
+        }
+        
+        .qr-section {
+            padding: 25px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .header h1 {
+            font-size: 1.8rem;
+        }
+        
+        .profile-name {
+            font-size: 1.8rem;
+        }
+        
+        .btn {
+            width: 100%;
+            margin-right: 0;
+        }
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --text-color: #e9ecef;
+            --bg-light: #343a40;
+            --border-color: #495057;
+        }
+    }
+
+    /* Print styles */
+    @media print {
+        body {
+            background: white;
+        }
+        
+        .tabs, .tab-content {
+            box-shadow: none;
+        }
+        
+        .btn {
+            display: none;
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 QR-Profil System</h1>
+            <p>Erstellen Sie dynamische Profile für Ihre T-Shirts</p>
+        </div>
+
+```
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('admin')">✏️ Profil bearbeiten</button>
+        <button class="tab" onclick="showTab('preview')">👁️ Vorschau</button>
+        <button class="tab" onclick="showTab('qr')">📱 QR-Code</button>
+    </div>
+
+    <div class="tab-content">
+        <!-- Admin Panel -->
+        <div id="admin-tab" class="tab-panel">
+            <div class="form-section">
+                <h3>👤 Persönliche Informationen</h3>
+                
+                <div class="form-group">
+                    <label for="profileName">Name / Titel *</label>
+                    <input type="text" id="profileName" placeholder="Ihr Name oder Firmenname" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="profileBio">Beschreibung / Bio</label>
+                    <textarea id="profileBio" placeholder="Erzählen Sie etwas über sich oder Ihr Unternehmen..."></textarea>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>🌐 Social Media Links</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="instagram">📷 Instagram</label>
+                        <input type="url" id="instagram" placeholder="https://instagram.com/username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="twitter">🐦 Twitter / X</label>
+                        <input type="url" id="twitter" placeholder="https://twitter.com/username">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="linkedin">💼 LinkedIn</label>
+                        <input type="url" id="linkedin" placeholder="https://linkedin.com/in/username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="facebook">👥 Facebook</label>
+                        <input type="url" id="facebook" placeholder="https://facebook.com/username">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="youtube">📺 YouTube</label>
+                        <input type="url" id="youtube" placeholder="https://youtube.com/@username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tiktok">🎵 TikTok</label>
+                        <input type="url" id="tiktok" placeholder="https://tiktok.com/@username">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="website">🌐 Website</label>
+                    <input type="url" id="website" placeholder="https://ihre-website.de">
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-success" onclick="saveProfile()">💾 Profil speichern</button>
+                <button class="btn btn-secondary" onclick="loadSampleData()">📝 Beispieldaten laden</button>
+                <button class="btn btn-secondary" onclick="clearProfile()">🗑️ Formular leeren</button>
+            </div>
+        </div>
+
+        <!-- Preview Panel -->
+        <div id="preview-tab" class="tab-panel hidden">
+            <div class="profile-card">
+                <div class="profile-avatar">👤</div>
+                <div id="previewName" class="profile-name">Ihr Name</div>
+                <div id="previewBio" class="profile-bio">Ihre Beschreibung erscheint hier...</div>
+                <div id="previewSocial" class="social-links"></div>
+            </div>
+            
+            <div style="text-align: center;">
+                <button class="btn" onclick="showTab('qr')">📱 QR-Code generieren</button>
+            </div>
+        </div>
+
+        <!-- QR Code Panel -->
+        <div id="qr-tab" class="tab-panel hidden">
+            <div class="qr-section">
+                <h2>📱 QR-Code für T-Shirt Druck</h2>
+                <div id="qrcode"></div>
+                <div class="profile-url">
+                    <strong>🔗 Profil-URL:</strong><br>
+                    <span id="profileUrl">Speichern Sie zuerst Ihr Profil</span>
+                </div>
+                
+                <div class="qr-instructions">
+                    <h4>📋 Anweisungen für T-Shirt Druck:</h4>
+                    <ul>
+                        <li>Rechtsklick auf QR-Code → "Bild speichern unter..."</li>
+                        <li>Mindestgröße: 3x3 cm für zuverlässiges Scannen</li>
+                        <li>Schwarzer Code auf weißem/hellem Untergrund</li>
+                        <li>Position: Brust oder Rücken, gut sichtbar</li>
+                        <li>Glatte Materialien funktionieren am besten</li>
+                    </ul>
+                </div>
+                
+                <div style="margin-top: 25px;">
+                    <button class="btn" onclick="downloadQR()">💾 QR-Code herunterladen</button>
+                    <button class="btn btn-secondary" onclick="printQR()">🖨️ QR-Code drucken</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Globale Variablen
+    let currentProfile = {
+        name: '',
+        bio: '',
+        social: {}
+    };
+
+    let qrCodeCanvas = null;
+
+    // Tab-Funktionalität
+    function showTab(tabName) {
+        // Alle Tabs deaktivieren
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
+        
+        // Aktiven Tab aktivieren
+        event.target.classList.add('active');
+        document.getElementById(tabName + '-tab').classList.remove('hidden');
+        
+        // Vorschau und QR-Code aktualisieren wenn nötig
+        if (tabName === 'preview') {
+            updatePreview();
+        } else if (tabName === 'qr') {
+            generateQRCode();
+        }
+    }
+
+    // Profil speichern
+    function saveProfile() {
+        const name = document.getElementById('profileName').value.trim();
+        
+        if (!name) {
+            alert('❌ Bitte geben Sie mindestens einen Namen ein!');
+            return;
+        }
+
+        currentProfile = {
+            name: name,
+            bio: document.getElementById('profileBio').value.trim(),
+            social: {
+                instagram: document.getElementById('instagram').value.trim(),
+                twitter: document.getElementById('twitter').value.trim(),
+                linkedin: document.getElementById('linkedin').value.trim(),
+                facebook: document.getElementById('facebook').value.trim(),
+                youtube: document.getElementById('youtube').value.trim(),
+                tiktok: document.getElementById('tiktok').value.trim(),
+                website: document.getElementById('website').value.trim()
+            },
+            timestamp: new Date().toISOString(),
+            id: 'profile_' + Date.now()
+        };
+
+        // Validierung der URLs
+        const socialLinks = Object.entries(currentProfile.social).filter(([key, value]) => value);
+        const invalidUrls = socialLinks.filter(([key, url]) => !isValidUrl(url));
+        
+        if (invalidUrls.length > 0) {
+            alert('⚠️ Bitte überprüfen Sie die URLs: ' + invalidUrls.map(([key]) => key).join(', '));
+            return;
+        }
+
+        // Profil erfolgreich gespeichert
+        alert('✅ Profil erfolgreich gespeichert!\n\nProfil-ID: ' + currentProfile.id);
+        
+        // Vorschau aktualisieren
+        updatePreview();
+        generateQRCode();
+    }
+
+    // URL Validierung
+    function isValidUrl(string) {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
+
+    // Vorschau aktualisieren
+    function updatePreview() {
+        document.getElementById('previewName').textContent = currentProfile.name || 'Ihr Name';
+        document.getElementById('previewBio').textContent = currentProfile.bio || 'Ihre Beschreibung erscheint hier...';
+        
+        // Social Links erstellen
+        const socialContainer = document.getElementById('previewSocial');
+        socialContainer.innerHTML = '';
+        
+        const socialPlatforms = {
+            instagram: { name: '📷 Instagram', color: '#E4405F' },
+            twitter: { name: '🐦 Twitter', color: '#1DA1F2' },
+            linkedin: { name: '💼 LinkedIn', color: '#0077B5' },
+            facebook: { name: '👥 Facebook', color: '#4267B2' },
+            youtube: { name: '📺 YouTube', color: '#FF0000' },
+            tiktok: { name: '🎵 TikTok', color: '#000000' },
+            website: { name: '🌐 Website', color: '#667eea' }
+        };
+
+        Object.entries(currentProfile.social || {}).forEach(([platform, url]) => {
+            if (url && url.trim()) {
+                const link = document.createElement('a');
+                link.href = url;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.className = `social-link ${platform}`;
+                link.textContent = socialPlatforms[platform].name;
+                socialContainer.appendChild(link);
+            }
+        });
+
+        if (socialContainer.children.length === 0) {
+            socialContainer.innerHTML = '<p style="color: #999; grid-column: 1 / -1;">Keine Social Media Links hinzugefügt</p>';
+        }
+    }
+
+    // QR-Code generieren
+    function generateQRCode() {
+        if (!currentProfile.name) {
+            document.getElementById('profileUrl').textContent = 'Speichern Sie zuerst Ihr Profil';
+            document.getElementById('qrcode').innerHTML = '<p style="color: #999;">Erst Profil speichern, dann QR-Code generieren</p>';
+            return;
+        }
+
+        const profileUrl = `${window.location.origin}${window.location.pathname}?profile=${encodeURIComponent(currentProfile.id)}`;
+        
+        document.getElementById('profileUrl').textContent = profileUrl;
+        
+        // QR-Code erstellen
+        const qrContainer = document.getElementById('qrcode');
+        qrContainer.innerHTML = '';
+        
+        QRCode.toCanvas(qrContainer, profileUrl, {
+            width: 250,
+            height: 250,
+            colorDark: '#333333',
+            colorLight: '#ffffff',
+            margin: 3,
+            correctLevel: QRCode.CorrectLevel.M
+        }, function (error, canvas) {
+            if (error) {
+                console.error(error);
+                qrContainer.innerHTML = '<p style="color: red;">Fehler beim Erstellen des QR-Codes</p>';
+            } else {
+                qrCodeCanvas = canvas;
+            }
+        });
+    }
+
+    // QR-Code herunterladen
+    function downloadQR() {
+        if (!qrCodeCanvas) {
+            alert('❌ Erst QR-Code generieren!');
+            return;
+        }
+
+        const link = document.createElement('a');
+        link.download = `qr-code-${currentProfile.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
+        link.href = qrCodeCanvas.toDataURL();
+        link.click();
+    }
+
+    // QR-Code drucken
+    function printQR() {
+        if (!qrCodeCanvas) {
+            alert('❌ Erst QR-Code generieren!');
+            return;
+        }
+
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>QR-Code - ${currentProfile.name}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+                    .qr-print { margin: 20px auto; }
+                    .info { margin-top: 30px; color: #666; }
+                </style>
+            </head>
+            <body>
+                <h1>${currentProfile.name}</h1>
+                <div class="qr-print">
+                    <img src="${qrCodeCanvas.toDataURL()}" alt="QR-Code">
+                </div>
+                <div class="info">
+                    <p>QR-Code für T-Shirt Druck</p>
+                    <p>Mindestgröße: 3x3 cm</p>
+                    <p>${document.getElementById('profileUrl').textContent}</p>
+                </div>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+    // Beispieldaten laden
+    function loadSampleData() {
+        document.getElementById('profileName').value = 'Max Mustermann';
+        document.getElementById('profileBio').value = 'Digitaler Nomade und Tech-Enthusiast 🚀\n\nImmer auf der Suche nach neuen Abenteuern und spannenden Projekten! Folge mir für Updates über Technologie, Reisen und Entrepreneurship.';
+        document.getElementById('instagram').value = 'https://instagram.com/maxmustermann';
+        document.getElementById('twitter').value = 'https://twitter.com/maxmustermann';
+        document.getElementById('linkedin').value = 'https://linkedin.com/in/maxmustermann';
+        document.getElementById('website').value = 'https://maxmustermann.de';
+        document.getElementById('youtube').value = 'https://youtube.com/@maxmustermann';
+        
+        alert('📝 Beispieldaten geladen! Klicken Sie auf "Profil speichern" um die Änderungen zu übernehmen.');
+    }
+
+    // Formular leeren
+    function clearProfile() {
+        if (confirm('🗑️ Möchten Sie wirklich alle Eingaben löschen?')) {
+            document.querySelectorAll('input, textarea').forEach(input => input.value = '');
+            currentProfile = { name: '', bio: '', social: {} };
+            updatePreview();
+            alert('✅ Formular geleert!');
+        }
+    }
+
+    // URL Parameter handling
+    function handleUrlParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const profileId = urlParams.get('profile');
+        
+        if (profileId) {
+            // Simuliere das Laden eines Profils basierend auf der ID
+            // In einer echten Anwendung würde hier eine Datenbankabfrage stehen
+            loadSampleData();
+            saveProfile();
+            showTab('preview');
+            
+            // Tab-Buttons entsprechend aktualisieren
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab')[1].classList.add('active'); // Preview tab
+            
+            // URL bereinigen (optional)
+            // window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        handleUrlParams();
+        
+        // Automatisches Speichern bei Eingabe (optional)
+        /*
+        document.querySelectorAll('input, textarea').forEach(input => {
+            input.addEventListener('input', debounce(function() {
+                if (currentProfile.name) {
+                    saveProfile();
+                }
+            }, 2000));
+        });
+        */
+    });
+
+    // Debounce Funktion für Performance
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey || e.metaKey) {
+            switch(e.key) {
+                case 's':
+                    e.preventDefault();
+                    saveProfile();
+                    break;
+                case '1':
+                    e.preventDefault();
+                    showTab('admin');
+                    break;
+                case '2':
+                    e.preventDefault();
+                    showTab('preview');
+                    break;
+                case '3':
+                    e.preventDefault();
+                    showTab('qr');
+                    break;
+            }
+        }
+    });
+
+    // Service Worker für Offline-Funktionalität (optional)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/sw.js')
+                .then(function(registration) {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(function(err) {
+                    console.log('ServiceWorker registration failed');
+                });
+        });
+    }
+</script>
+```
+
+</body>
+</html>
